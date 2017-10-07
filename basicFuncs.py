@@ -36,33 +36,19 @@ def createObstacleMap(deserialized_map):
     return obstacleMap
 
 def planMovement(obstacleMap, startPoint, endPoint):
-    points = []
-    currentPoint = startPoint
-    dx = endPoint.X - startPoint.X
-    dy = endPoint.Y - startPoint.Y
-    while dx != 0:
-        points.append(currentPoint)
-        currentPoint = Point(int(currentPoint.X + dx/abs(dx)), int(currentPoint.Y))
-        dx = endPoint.X - currentPoint.X
+    obstacleMap[endPoint.X][endPoint.Y] = 1
+    grid = Grid(matrix=obstacleMap)
+    #print("Position x = " + str(startPoint.X) + ", y = " + str(startPoint.Y) + "\n")
+    start = grid.node(startPoint.X, startPoint.Y)
+    end = grid.node(endPoint.X, endPoint.Y)
 
-    while dy != 0:
-        points.append(currentPoint)
-        currentPoint = Point(int(currentPoint.X), int(currentPoint.Y + dy / abs(dy)))
-        dy = endPoint.Y - currentPoint.Y
+    finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
+    path, runs = finder.find_path(start, end, grid)
+
+    points = []
+    for node in path:
+        points.append(Point(node[0], node[1]))
     return points
-#    obstacleMap[endPoint.X][endPoint.Y] = 1
-#    grid = Grid(matrix=obstacleMap)
-#    #print("Position x = " + str(startPoint.X) + ", y = " + str(startPoint.Y) + "\n")
-#    start = grid.node(startPoint.X, startPoint.Y)
-#    end = grid.node(endPoint.X, endPoint.Y)
-#
-#    finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
-#    path, runs = finder.find_path(start, end, grid)
-#
-#    points = []
-#    for node in path:
-#        points.append(Point(node[0], node[1]))
-#    return points
 
 
 

@@ -113,40 +113,50 @@ def bot():
     if shortestPath is None or (currentPosition == player.HouseLocation):
         isFirstMove = True
         print("-------------------------=======================-----------------\n")
-        resourcePos = findClosestResource(currentPosition, deserialized_map)
-        shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos)
+        resourcePos = findClosestResource(currentPosition, deserialized_map) + offset
+        #shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos)
         print("Resource pos x= " + str(resourcePos.X) + ", y= " + str(resourcePos.Y) + "\n")
 
 
     #Temporary state machine
     #GoToMine State
-    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(resourcePos, currentPosition) > 1:
-        pathIndex += 1
-        if pathIndex == 2:
-            pathIndex -= 1
+    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(resourcePos, currentPosition + offset) > 1:
+        shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos - offset)
         print("Path index is " + str(pathIndex) + " with coords x = " + str(shortestPath[pathIndex].X + offset_x) + ", y = " + str(shortestPath[pathIndex].Y + offset_y) + "\n")
         print("gotomine \n")
         for i in shortestPath:
             print("Path point x = " + str(i.X + offset_x) + ", y = " + str(i.Y + offset_y) + "\n")
-
-        return create_move_action(shortestPath[pathIndex] + offset)
+        print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
+                         for row in deserialized_map]))
+        if len(shortestPath) != 1:
+            return create_move_action(shortestPath[1] + offset)
+        else:
+            return create_move_action(resourcePos)
     #Mine State
-    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(resourcePos, currentPosition) == 1 and deserialized_map[resourcePos.X][resourcePos.Y].Content == str(TileContent.Resource):
+    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(resourcePos, currentPosition + offset) == 1 and deserialized_map[resourcePos.X - offset_x][resourcePos.Y - offset_y].Content == str(TileContent.Resource):
         print("mine \n")
         print("carry: " + str(player.CarriedRessources) + "\n")
         print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
                          for row in deserialized_map]))
-        return create_collect_action(resourcePos + offset)
+        return create_collect_action(resourcePos)
     #GoToHouse State
     if (player.CarriedRessources == player.CarryingCapacity or deserialized_map[resourcePos.X][resourcePos.Y].Content != str(TileContent.Resource)) and player.HouseLocation != currentPosition:
-        if isFirstMove:
-            shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, player.HouseLocation - offset)
-            isFirstMove = False
-        pathIndex += 1
-        if pathIndex == 2:
-            pathIndex -= 1
+        shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, player.HouseLocation - offset)
+        isFirstMove = False
+        #pathIndex += 1
+        #if pathIndex == 2:
+        #    pathIndex -= 1
+        print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
+                         for row in deserialized_map]))
         print("gotohouse \n")
-        return create_move_action(shortestPath[pathIndex] + offset)
+        print("house location = " + str(player.HouseLocation) + "\n")
+        for i in shortestPath:
+            print("Path point x = " + str(i.X + offset_x) + ", y = " + str(i.Y + offset_y) + "\n")
+        if len(shortestPath) != 1:
+            return create_move_action(shortestPath[1] + offset)
+        else:
+            shortestPath = None
+            return create_move_action(player.HouseLocation)
 
     return create_move_action(currentPosition)
 
