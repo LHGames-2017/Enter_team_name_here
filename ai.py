@@ -6,6 +6,7 @@ import numpy
 from basicFuncs import *
 
 app = Flask(__name__)
+bot.shortestPath = None
 
 def create_action(action_type, target):
     actionContent = ActionContent(action_type, target.__dict__)
@@ -86,7 +87,17 @@ def bot():
             otherPlayers.append({player_name: player_info })
 
     # return decision
-    return create_move_action(Point(0,1))
+    #return create_move_action(Point(0,1))
+
+    # get nearest ressource
+    if bot.shortestPath == None:
+        bot.shortestPath = findClosestResource(pos, deserialized_map)
+
+    #Temporary state machine
+    #GoToMine State
+    if 
+    #Mine State
+    #if mine vide -> shortestPath = None
 
 @app.route("/", methods=["POST"])
 def reponse():

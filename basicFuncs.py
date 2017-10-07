@@ -6,8 +6,6 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-
-
 def findClosestResource(currentPosition, deserialized_map):
     minDistToResource = 10000000
     minDistResourcePosition = 0
