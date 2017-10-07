@@ -37,6 +37,9 @@ def planMovement(obstacleMap, startPoint, endPoint):
     finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
     path, runs = finder.find_path(start, end, grid)
 
-    return path
+    points = []
+    for node in path:
+        points.append(Point(node.x, node.y))
+    return points
 
 
