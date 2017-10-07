@@ -42,12 +42,12 @@ def planMovement(obstacleMap, startPoint, endPoint):
     dy = endPoint.Y - startPoint.Y
     while dx != 0:
         points.append(currentPoint)
-        currentPoint = Point(currentPoint.X + dx/abs(dx), currentPoint.Y)
+        currentPoint = Point(int(currentPoint.X + dx/abs(dx)), int(currentPoint.Y))
         dx = endPoint.X - currentPoint.X
 
     while dy != 0:
         points.append(currentPoint)
-        currentPoint = Point(currentPoint.X, currentPoint.Y + dy / abs(dy))
+        currentPoint = Point(int(currentPoint.X), int(currentPoint.Y + dy / abs(dy)))
         dy = endPoint.Y - currentPoint.Y
     return points
 #    obstacleMap[endPoint.X][endPoint.Y] = 1
