@@ -110,7 +110,7 @@ def bot():
     #Mine State
     if player.CarriedRessources < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content == TileContent.Resource:
         return create_collect_action(bot.ressourcePos)
-    GoToHouse State
+    #GoToHouse State
     if (player.CarriedRessources == player.CarryingCapacity or deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != TileContent.Resource) and player.HouseLocation != currentPosition:
         bot.pathIndex -= 1
         return create_move_action(bot.shortestPath[bot.pathIndex])
