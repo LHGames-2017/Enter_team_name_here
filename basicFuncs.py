@@ -1,6 +1,5 @@
 import numpy
 from structs import *
-from ai import *
 
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
@@ -43,21 +42,21 @@ def planMovement(obstacleMap, startPoint, endPoint):
         points.append(Point(node.x, node.y))
     return points
 
-def upgradeInHouse(currentPosition,upgradetypearray):
-    if upgradetypearray == 'CarryingCapacity':
-        upgrade = UpgradeType.CarryingCapacity
-    elif upgradetypearray == 'AttackPower':
-        upgrade = UpgradeType.AttackPower
-    elif upgradetypearray == 'Defence':
-        upgrade = UpgradeType.Defence
-    elif upgradetypearray == 'MaximumHealth':
-        upgrade = UpgradeType.MaximumHealth
-    elif upgradetypearray == 'CollectingSpeed':
-        upgrade = UpgradeType.CollectingSpeed
-
-    houseLocation = Player.HouseLocation
-    if currentPosition==houseLocation:
-        create_upgrade_action(upgrade)
+#def upgradeInHouse(currentPosition,upgradetypearray):
+#    if upgradetypearray == 'CarryingCapacity':
+#        upgrade = UpgradeType.CarryingCapacity
+#    elif upgradetypearray == 'AttackPower':
+#        upgrade = UpgradeType.AttackPower
+#    elif upgradetypearray == 'Defence':
+#        upgrade = UpgradeType.Defence
+#    elif upgradetypearray == 'MaximumHealth':
+#        upgrade = UpgradeType.MaximumHealth
+#    elif upgradetypearray == 'CollectingSpeed':
+#        upgrade = UpgradeType.CollectingSpeed
+#
+#    houseLocation = Player.HouseLocation
+#    if currentPosition==houseLocation:
+#        create_upgrade_action(upgrade)
 
 
 
