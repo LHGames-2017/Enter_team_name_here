@@ -119,8 +119,5 @@ def reponse():
     return bot()
 
 if __name__ == "__main__":
-<<<<<<< HEAD
-    app.run(host="localhost", port=3000)
-=======
-    app.run(host="0.0.0.0", port=8080)
->>>>>>> gold
+    app.run(host="localhost", port=8080)
+

@@ -78,13 +78,7 @@ class PlayerInfo(object):
         self.Position = position
 
 class ActionContent(object):
-
-<<<<<<< HEAD
     def __init__(self, action_name, content):
         self.ActionName = action_name
         self.Content = str(content)
-=======
-   def __init__(self, action_name, content):
-       self.ActionName = action_name
-       self.Content = str(content)
->>>>>>> gold
+
