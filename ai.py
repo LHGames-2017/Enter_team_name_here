@@ -9,7 +9,9 @@ app = Flask(__name__)
 
 def create_action(action_type, target):
     actionContent = ActionContent(action_type, target.__dict__)
-    return json.dumps(actionContent.__dict__)
+    bleh = json.dumps(actionContent.__dict__)
+    print(bleh)
+    return bleh
 
 def create_move_action(target):
     print("Target move x = " + str(target.X) + ", y = " + str(target.Y) + "\n")
@@ -103,12 +105,13 @@ def bot():
     global shortestPath
     global resourcePos
     global pathIndex
-    #global isFirstMove
+    global isFirstMove
 
     currentPosition = Point(x-offset_x,y-offset_y)
     print("position X= " + str(x) + " Y= " + str(y))
     # get nearest ressource
-    if shortestPath is None or (currentPosition == player.HouseLocation and resourcePos is not None and deserialized_map[resourcePos.X][resourcePos.Y].Content != str(TileContent.Resource)):
+    if shortestPath is None or (currentPosition == player.HouseLocation):
+        isFirstMove = True
         print("-------------------------=======================-----------------\n")
         resourcePos = findClosestResource(currentPosition, deserialized_map)
         shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos)
@@ -131,10 +134,17 @@ def bot():
     if player.CarriedRessources < player.CarryingCapacity and Point().Distance(resourcePos, currentPosition) == 1 and deserialized_map[resourcePos.X][resourcePos.Y].Content == str(TileContent.Resource):
         print("mine \n")
         print("carry: " + str(player.CarriedRessources) + "\n")
-        return create_collect_action(resourcePos)
+        print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
+                         for row in deserialized_map]))
+        return create_collect_action(resourcePos + offset)
     #GoToHouse State
     if (player.CarriedRessources == player.CarryingCapacity or deserialized_map[resourcePos.X][resourcePos.Y].Content != str(TileContent.Resource)) and player.HouseLocation != currentPosition:
-        pathIndex -= 1
+        if isFirstMove:
+            shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, player.HouseLocation - offset)
+            isFirstMove = False
+        pathIndex += 1
+        if pathIndex == 2:
+            pathIndex -= 1
         print("gotohouse \n")
         return create_move_action(shortestPath[pathIndex] + offset)
 
