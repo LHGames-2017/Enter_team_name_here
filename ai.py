@@ -90,28 +90,30 @@ def bot():
 
     # return decision
     #return create_move_action(Point(0,1))
-    offset_x = deserialized_map[0][0].x
-    offset_y = deserialized_map[0][0].y
+    offset_x = deserialized_map[0][0].X
+    offset_y = deserialized_map[0][0].Y
 
     currentPosition = Point(x-offset_x,y-offset_y)
     print("position X= " + str(x) + " Y= " + str(y))
     # get nearest ressource
-    if bot.shortestPath == None or (pos == house and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content != TileContent.Resource):
+    if bot.shortestPath == None or (pos == player.HouseLocation and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != TileContent.Resource):
         bot.ressourcePos = findClosestResource(currentPosition, deserialized_map)
         bot.shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, bot.ressourcePos)
 
     #Temporary state machine
     #GoToMine State
-    if p.CarriedRessources < p.CarryingCapacity and Point.Distance(bot.ressourcePos, pos) > 1:
+    if player.CarriedRessources < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) > 1:
         bot.pathIndex += 1
         return create_move_action(bot.shortestPath[bot.pathIndex])
     #Mine State
-    if p.CarriedRessources < p.CarryingCapacity and Point.Distance(bot.ressourcePos, pos) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content == TileContent.Resource:
+    if player.CarriedRessources < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content == TileContent.Resource:
         return create_collect_action(bot.ressourcePos)
     #GoToHouse State
-    if (p.CarriedRessources == p.CarryingCapacity or deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content != TileContent.Resource) and house != pos:
+    if (player.CarriedRessources == player.CarryingCapacity or deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != TileContent.Resource) and player.HouseLocation != currentPosition:
         bot.pathIndex -= 1
         return create_move_action(bot.shortestPath[bot.pathIndex])
+
+    return create_move_action(currentPosition)
 
 
 bot.shortestPath = None

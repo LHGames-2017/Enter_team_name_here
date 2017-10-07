@@ -7,7 +7,7 @@ from pathfinding.finder.a_star import AStarFinder
 
 def findClosestResource(currentPosition, deserialized_map):
     minDistToResource = 10000000
-    minDistResourcePosition = 0
+    minDistResourcePosition = Point()
     for x in range(0,len(deserialized_map)):
         for y in range(0, len(deserialized_map[0])):
             if deserialized_map[x][y].Content == TileContent.Resource:
