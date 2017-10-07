@@ -13,7 +13,7 @@ def findClosestResource(currentPosition, deserialized_map):
     minDistResourcePosition = 0
     for x in range(deserialized_map):
         for y in range(deserialized_map[x]):
-            if deserialized_map[x][y].Content == Resource:
+            if deserialized_map[x][y].Content == TileContent.Resource:
                 resPosition = Point(x, y)
                 currentDistance = Point.Distance(currentPosition, resPosition)
                 if currentDistance < minDistToResource:
@@ -27,8 +27,18 @@ def createObstacleMap(deserialized_map):
     obstacleMap = numpy.zeros(len(deserialized_map), len(deserialized_map[0]))
     for x in range(deserialized_map):
         for y in range(deserialized_map[x]):
-            if deserialized_map[x][y].Content == Lava or deserialized_map[x][y].Content == Wall:
+            if deserialized_map[x][y].Content == TileContent.Lava or deserialized_map[x][y].Content == TileContent.Wall:
                 obstacleMap[x][y] = 1
     return obstacleMap
+
+def planMovement(obstacleMap, startPoint, endPoint):
+    grid = Grid(matrix=obstacleMap)
+    start = grid.node(startPoint.x, startPoint.y)
+    end = grid.node(endPoint.x, endPoint.y)
+
+    finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
+    path, runs = finder.find_path(start, end, grid)
+
+    return path
 
 
