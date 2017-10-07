@@ -12,6 +12,7 @@ def create_action(action_type, target):
     return json.dumps(actionContent.__dict__)
 
 def create_move_action(target):
+    print("Target move x = " + str(target.X) + ", y = " + str(target.Y) + "\n")
     return create_action("MoveAction", target)
 
 def create_attack_action(target):
@@ -69,7 +70,7 @@ def bot():
     y = pos["Y"]
     house = p["HouseLocation"]
     player = Player(p["Health"], p["MaxHealth"], Point(x,y),
-                    Point(house["X"], house["Y"]),
+                    Point(house["X"], house["Y"]), p["Score"],
                     p["CarriedResources"], p["CarryingCapacity"])
 
     # Map
@@ -78,46 +79,55 @@ def bot():
 
     otherPlayers = []
 
-    for player_dict in map_json["OtherPlayers"]:
-        for player_name in player_dict.keys():
-            player_info = player_dict[player_name]
-            p_pos = player_info["Position"]
-            player_info = PlayerInfo(player_info["Health"],
+    for players in map_json["OtherPlayers"]:
+                player_info = players["Value"]
+                p_pos = player_info["Position"]
+                player_info = PlayerInfo(player_info["Health"],
                                      player_info["MaxHealth"],
                                      Point(p_pos["X"], p_pos["Y"]))
 
-            otherPlayers.append({player_name: player_info })
+                otherPlayers.append(player_info)
 
     # return decision
     #return create_move_action(Point(0,1))
     offset_x = deserialized_map[0][0].X
     offset_y = deserialized_map[0][0].Y
+    offset = Point(offset_x, offset_y)
 
     currentPosition = Point(x-offset_x,y-offset_y)
     print("position X= " + str(x) + " Y= " + str(y))
     # get nearest ressource
-    if bot.shortestPath == None or (pos == player.HouseLocation and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != TileContent.Resource):
+    #print("BLEHHHHHHH======= " + str(bot.shortestPath == None))
+    if bot.shortestPath == None or (currentPosition == player.HouseLocation and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != str(TileContent.Resource)):
         bot.ressourcePos = findClosestResource(currentPosition, deserialized_map)
+        print("Resource pos x= " + str(bot.ressourcePos.X) + ", y= " + str(bot.ressourcePos.Y) + "\n")
         bot.shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, bot.ressourcePos)
 
     #Temporary state machine
     #GoToMine State
-    if player.CarriedRessources < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) > 1:
+    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(bot.ressourcePos, currentPosition) > 1:
         bot.pathIndex += 1
-        return create_move_action(bot.shortestPath[bot.pathIndex])
+        print("Path index is " + str(bot.pathIndex) + "with coords x = " + str(bot.shortestPath[bot.pathIndex].X + offset_x) + ", y = " + str(bot.shortestPath[bot.pathIndex].Y + offset_y) + "\n")
+        print("gotomine \n")
+        #for i in bot.shortestPath:
+        #    print("Path point x = " + str(i.X) + ", y = " + str(i.Y) + "\n")
+        return create_move_action(bot.shortestPath[bot.pathIndex] + offset)
     #Mine State
-    if player.CarriedRessources < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content == TileContent.Resource:
+    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(bot.ressourcePos, currentPosition) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content == TileContent.Resource:
+        print("mine \n")
         return create_collect_action(bot.ressourcePos)
     #GoToHouse State
     if (player.CarriedRessources == player.CarryingCapacity or deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != TileContent.Resource) and player.HouseLocation != currentPosition:
         bot.pathIndex -= 1
-        return create_move_action(bot.shortestPath[bot.pathIndex])
+        print("gotohouse \n")
+        return create_move_action(bot.shortestPath[bot.pathIndex] + offset)
 
     return create_move_action(currentPosition)
 
 
 bot.shortestPath = None
 bot.pathIndex = 0
+bot.RessourcePos = None
 
 @app.route("/", methods=["POST"])
 def reponse():
@@ -127,4 +137,4 @@ def reponse():
     return bot()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, debug=True)
