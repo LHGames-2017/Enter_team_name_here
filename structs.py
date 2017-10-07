@@ -79,6 +79,6 @@ class PlayerInfo(object):
 
 class ActionContent(object):
 
-    def __init__(self, action_name, content):
-        self.ActionName = action_name
-        self.Content = {}
+   def __init__(self, action_name, content):
+       self.ActionName = action_name
+       self.Content = str(content)
