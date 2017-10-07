@@ -107,10 +107,11 @@ def bot():
     #GoToMine State
     if player.CarriedRessources < player.CarryingCapacity and Point().Distance(bot.ressourcePos, currentPosition) > 1:
         bot.pathIndex += 1
-        print("Path index is " + str(bot.pathIndex) + "with coords x = " + str(bot.shortestPath[bot.pathIndex].X + offset_x) + ", y = " + str(bot.shortestPath[bot.pathIndex].Y + offset_y) + "\n")
+        print("Path index is " + str(bot.pathIndex) + " with coords x = " + str(bot.shortestPath[bot.pathIndex].X + offset_x) + ", y = " + str(bot.shortestPath[bot.pathIndex].Y + offset_y) + "\n")
         print("gotomine \n")
-        #for i in bot.shortestPath:
-        #    print("Path point x = " + str(i.X) + ", y = " + str(i.Y) + "\n")
+        for i in bot.shortestPath:
+            print("Path point x = " + str(i.X + offset_x) + ", y = " + str(i.Y + offset_y) + "\n")
+
         return create_move_action(bot.shortestPath[bot.pathIndex] + offset)
     #Mine State
     if player.CarriedRessources < player.CarryingCapacity and Point().Distance(bot.ressourcePos, currentPosition) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content == TileContent.Resource:
@@ -126,7 +127,7 @@ def bot():
 
 
 bot.shortestPath = None
-bot.pathIndex = 0
+bot.pathIndex = int(-1)
 bot.RessourcePos = None
 
 @app.route("/", methods=["POST"])
