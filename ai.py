@@ -6,8 +6,6 @@ import numpy
 from basicFuncs import *
 
 app = Flask(__name__)
-bot.shortestPath = None
-bot.pathIndex = 0
 
 def create_action(action_type, target):
     actionContent = ActionContent(action_type, target.__dict__)
@@ -92,7 +90,7 @@ def bot():
 
     # return decision
     #return create_move_action(Point(0,1))
-
+    print("position X= " + str(x) + " Y= " + str(y))
     # get nearest ressource
     if bot.shortestPath == None or (pos == house and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content != TileContent.Resource):
         bot.ressourcePos = findClosestResource(pos, deserialized_map)
@@ -110,6 +108,10 @@ def bot():
     if (p.CarriedRessources == p.CarryingCapacity or deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content != TileContent.Resource) and house != pos:
         bot.pathIndex -= 1
         return create_move_action(bot.shortestPath[bot.pathIndex])
+
+
+bot.shortestPath = None
+bot.pathIndex = 0
 
 @app.route("/", methods=["POST"])
 def reponse():
