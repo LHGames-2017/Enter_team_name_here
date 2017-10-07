@@ -108,7 +108,7 @@ def bot():
         bot.pathIndex += 1
         return create_move_action(bot.shortestPath[bot.pathIndex])
     #Mine State
-    if player.CarriedRessourcse < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content == TileContent.Resource:
+    if player.CarriedRessources < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content == TileContent.Resource:
         return create_collect_action(bot.ressourcePos)
     #GoToHouse State
     if (player.CarriedRessources == player.CarryingCapacity or deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != TileContent.Resource) and player.HouseLocation != currentPosition:
@@ -120,4 +120,15 @@ def bot():
 
 bot.shortestPath = None
 bot.pathIndex = 0
+
+@app.route("/", methods=["POST"])
+def reponse():
+    """
+    Point d'entree appelle par le GameServer
+    """
+    return bot()
+
+if __name__ == "__main__":
+    app.run(host="localhost", port=8080)
+    print("ok")
 
