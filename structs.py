@@ -52,7 +52,7 @@ class GameInfo(object):
 class Tile(object):
 
     def __init__(self, content=None, x=0, y=0):
-        self.Content = content
+        self.Content = str(content)
         self.X = x
         self.Y = y
 
