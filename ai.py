@@ -90,11 +90,15 @@ def bot():
 
     # return decision
     #return create_move_action(Point(0,1))
+    offset_x = deserialized_map[0][0].x
+    offset_y = deserialized_map[0][0].y
+
+    currentPosition = Point(x-offset_x,y-offset_y)
     print("position X= " + str(x) + " Y= " + str(y))
     # get nearest ressource
     if bot.shortestPath == None or (pos == house and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content != TileContent.Resource):
-        bot.ressourcePos = findClosestResource(pos, deserialized_map)
-        bot.shortestPath = planMovement(createObstacleMap(deserialized_map), pos, bot.ressourcePos)
+        bot.ressourcePos = findClosestResource(currentPosition, deserialized_map)
+        bot.shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, bot.ressourcePos)
 
     #Temporary state machine
     #GoToMine State

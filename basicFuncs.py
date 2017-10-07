@@ -8,11 +8,11 @@ from pathfinding.finder.a_star import AStarFinder
 def findClosestResource(currentPosition, deserialized_map):
     minDistToResource = 10000000
     minDistResourcePosition = 0
-    for x in range(deserialized_map):
-        for y in range(deserialized_map[x]):
+    for x in range(0,len(deserialized_map)):
+        for y in range(0, len(deserialized_map[0])):
             if deserialized_map[x][y].Content == TileContent.Resource:
                 resPosition = Point(x, y)
-                currentDistance = Point.Distance(currentPosition, resPosition)
+                currentDistance = Point().Distance(currentPosition, resPosition)
                 if currentDistance < minDistToResource:
                     minDistToResource = currentDistance
                     minDistResourcePosition = resPosition
@@ -21,18 +21,21 @@ def findClosestResource(currentPosition, deserialized_map):
 
 # TODO: Add obstacle being other players
 def createObstacleMap(deserialized_map):
-    obstacleMap = numpy.zeros(len(deserialized_map), len(deserialized_map[0]))
-    for x in range(deserialized_map):
-        for y in range(deserialized_map[x]):
+    obstacleMap = [[0 for col in range(0, len(deserialized_map[0]))] for row in range(0,len(deserialized_map))]
+    for x in range(0,len(deserialized_map)):
+        for y in range(0, len(deserialized_map[0])):
             if deserialized_map[x][y].Content != TileContent.Empty :
                 obstacleMap[x][y] = 1
+    #print('\n'.join([''.join(['{:4}'.format(item) for item in row])
+    #                 for row in obstacleMap]))
     return obstacleMap
 
 def planMovement(obstacleMap, startPoint, endPoint):
-    obstacleMap[endPoint.x][endPoint.y] = 1
+    obstacleMap[endPoint.X][endPoint.Y] = 1
     grid = Grid(matrix=obstacleMap)
-    start = grid.node(startPoint.x, startPoint.y)
-    end = grid.node(endPoint.x, endPoint.y)
+    print("Position x = " + str(startPoint.X) + ", y = " + str(startPoint.Y) + "\n")
+    start = grid.node(startPoint.X, startPoint.Y)
+    end = grid.node(endPoint.X, endPoint.Y)
 
     finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
     path, runs = finder.find_path(start, end, grid)
