@@ -36,18 +36,19 @@ def createObstacleMap(deserialized_map):
     return obstacleMap
 
 def planMovement(obstacleMap, startPoint, endPoint):
-    obstacleMap[endPoint.X][endPoint.Y] = 1
+    obstacleMap[endPoint.X][endPoint.Y] = 0
+    obstacleMap[startPoint.X][startPoint.Y] = 0
     grid = Grid(matrix=obstacleMap)
     #print("Position x = " + str(startPoint.X) + ", y = " + str(startPoint.Y) + "\n")
-    start = grid.node(startPoint.X, startPoint.Y)
-    end = grid.node(endPoint.X, endPoint.Y)
+    start = grid.node(startPoint.Y, startPoint.X)
+    end = grid.node(endPoint.Y, endPoint.X)
 
     finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
     path, runs = finder.find_path(start, end, grid)
 
     points = []
     for node in path:
-        points.append(Point(node[0], node[1]))
+        points.append(Point(node[1], node[0]))
     return points
 
 
