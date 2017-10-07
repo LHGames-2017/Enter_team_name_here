@@ -84,5 +84,3 @@ def planMovement(obstacleMap, startPoint, endPoint):
 #        create_upgrade_action(upgrade)
 
 
-
-
