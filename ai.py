@@ -6,6 +6,8 @@ import numpy
 from basicFuncs import *
 
 app = Flask(__name__)
+bot.shortestPath = None
+bot.pathIndex = 0
 
 def create_action(action_type, target):
     actionContent = ActionContent(action_type, target.__dict__)
@@ -39,7 +41,7 @@ def deserialize_map(serialized_map):
     serialized_map = serialized_map[1:]
     rows = serialized_map.split('[')
     column = rows[0].split('{')
-    deserialized_map = [[Tile() for x in range(40)] for y in range(40)]
+    deserialized_map = [[Tile() for x in range(20)] for y in range(20)]
     for i in range(len(rows) - 1):
         column = rows[i + 1].split('{')
 
@@ -89,7 +91,25 @@ def bot():
             otherPlayers.append({player_name: player_info })
 
     # return decision
-    return create_move_action(Point(0,1))
+    #return create_move_action(Point(0,1))
+
+    # get nearest ressource
+    if bot.shortestPath == None or (pos == house and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content != TileContent.Resource):
+        bot.ressourcePos = findClosestResource(pos, deserialized_map)
+        bot.shortestPath = planMovement(createObstacleMap(deserialized_map), pos, bot.ressourcePos)
+
+    #Temporary state machine
+    #GoToMine State
+    if p.CarriedRessources < p.CarryingCapacity and Point.Distance(bot.ressourcePos, pos) > 1:
+        bot.pathIndex += 1
+        return create_move_action(bot.shortestPath[bot.pathIndex])
+    #Mine State
+    if p.CarriedRessources < p.CarryingCapacity and Point.Distance(bot.ressourcePos, pos) == 1 and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content == TileContent.Resource:
+        return create_collect_action(bot.ressourcePos)
+    #GoToHouse State
+    if (p.CarriedRessources == p.CarryingCapacity or deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].content != TileContent.Resource) and house != pos:
+        bot.pathIndex -= 1
+        return create_move_action(bot.shortestPath[bot.pathIndex])
 
 @app.route("/", methods=["POST"])
 def reponse():
