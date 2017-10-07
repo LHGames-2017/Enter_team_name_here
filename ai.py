@@ -29,6 +29,9 @@ def create_heal_action():
 def create_purchase_action(item):
     return create_action("PurchaseAction", item)
 
+def create_upgrade_action(Level):
+    return create_action("UpgradeAction",Level)
+
 def deserialize_map(serialized_map):
     """
     Fonction utilitaire pour comprendre la map
