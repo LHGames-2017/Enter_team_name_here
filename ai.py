@@ -69,7 +69,7 @@ def bot():
     y = pos["Y"]
     house = p["HouseLocation"]
     player = Player(p["Health"], p["MaxHealth"], Point(x,y),
-                    Point(house["X"], house["Y"],),p["Score"],
+                    Point(house["X"], house["Y"]),
                     p["CarriedResources"], p["CarryingCapacity"])
 
     # Map
@@ -84,7 +84,7 @@ def bot():
             p_pos = player_info["Position"]
             player_info = PlayerInfo(player_info["Health"],
                                      player_info["MaxHealth"],
-                                     Point(p_pos["X"], p_pos["Y"]),)
+                                     Point(p_pos["X"], p_pos["Y"]))
 
             otherPlayers.append({player_name: player_info })
 
@@ -95,16 +95,14 @@ def bot():
 
     currentPosition = Point(x-offset_x,y-offset_y)
     print("position X= " + str(x) + " Y= " + str(y))
-
     # get nearest ressource
-
     if bot.shortestPath == None or (pos == player.HouseLocation and bot.ressourcePos != None and deserialized_map[bot.ressourcePos.X][bot.ressourcePos.Y].Content != TileContent.Resource):
         bot.ressourcePos = findClosestResource(currentPosition, deserialized_map)
         bot.shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, bot.ressourcePos)
 
     #Temporary state machine
     #GoToMine State
-    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(bot.ressourcePos, currentPosition) > 1:
+    if player.CarriedRessources < player.CarryingCapacity and Point.Distance(bot.ressourcePos, currentPosition) > 1:
         bot.pathIndex += 1
         return create_move_action(bot.shortestPath[bot.pathIndex])
     #Mine State
