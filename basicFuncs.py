@@ -41,5 +41,3 @@ def planMovement(obstacleMap, startPoint, endPoint):
     for node in path:
         points.append(Point(node.x, node.y))
     return points
-
-
