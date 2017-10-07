@@ -3,6 +3,8 @@ from structs import *
 import json
 import numpy
 
+from basicFuncs import *
+
 app = Flask(__name__)
 
 def create_action(action_type, target):
