@@ -62,6 +62,10 @@ pathIndex = int(0)
 resourcePos = None
 isFirstMove = True
 
+goGetResource = True
+grabResource = False
+bringBackResource = False
+
 def bot():
     """
     Main de votre bot.
@@ -107,56 +111,49 @@ def bot():
     global pathIndex
     global isFirstMove
 
+    global goGetResource
+    global grabResource
+    global bringBackResource
+
     currentPosition = Point(x-offset_x,y-offset_y)
     print("position X= " + str(x) + " Y= " + str(y))
     # get nearest ressource
-    if shortestPath is None or (currentPosition == player.HouseLocation):
-        isFirstMove = True
-        print("-------------------------=======================-----------------\n")
+#    if shortestPath is None or (currentPosition == player.HouseLocation):
+#        isFirstMove = True
+#        print("-------------------------=======================-----------------\n")
+#        resourcePos = findClosestResource(currentPosition, deserialized_map) + offset
+#        #shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos)
+#        print("Resource pos x= " + str(resourcePos.X) + ", y= " + str(resourcePos.Y) + "\n")
+
+    if goGetResource:
         resourcePos = findClosestResource(currentPosition, deserialized_map) + offset
-        #shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos)
-        print("Resource pos x= " + str(resourcePos.X) + ", y= " + str(resourcePos.Y) + "\n")
-
-
-    #Temporary state machine
-    #GoToMine State
-    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(resourcePos, currentPosition + offset) > 1:
+        #print("res = " + str(resourcePos.X) + "  " + str(resourcePos.Y))
         shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos - offset)
-        print("Path index is " + str(pathIndex) + " with coords x = " + str(shortestPath[pathIndex].X + offset_x) + ", y = " + str(shortestPath[pathIndex].Y + offset_y) + "\n")
-        print("gotomine \n")
-        for i in shortestPath:
-            print("Path point x = " + str(i.X + offset_x) + ", y = " + str(i.Y + offset_y) + "\n")
-        print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
-                         for row in deserialized_map]))
-        if len(shortestPath) != 1:
+        #for i in shortestPath:
+        #    print("i = " + str(i.X) + "   " + str(i.Y) + "\n")
+
+        if len(shortestPath) > 2:
             return create_move_action(shortestPath[1] + offset)
         else:
-            return create_move_action(resourcePos)
-    #Mine State
-    if player.CarriedRessources < player.CarryingCapacity and Point().Distance(resourcePos, currentPosition + offset) == 1 and deserialized_map[resourcePos.X - offset_x][resourcePos.Y - offset_y].Content == str(TileContent.Resource):
-        print("mine \n")
-        print("carry: " + str(player.CarriedRessources) + "\n")
-        print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
-                         for row in deserialized_map]))
-        return create_collect_action(resourcePos)
-    #GoToHouse State
-    if (player.CarriedRessources == player.CarryingCapacity or deserialized_map[resourcePos.X][resourcePos.Y].Content != str(TileContent.Resource)) and player.HouseLocation != currentPosition:
+            goGetResource = False
+            grabResource = True
+
+    if grabResource:
+        if player.CarriedRessources < player.CarryingCapacity:
+            return create_collect_action(resourcePos)
+        else:
+            grabResource = False
+            bringBackResource = True
+
+    if bringBackResource:
         shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, player.HouseLocation - offset)
-        isFirstMove = False
-        #pathIndex += 1
-        #if pathIndex == 2:
-        #    pathIndex -= 1
-        print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
-                         for row in deserialized_map]))
-        print("gotohouse \n")
-        print("house location = " + str(player.HouseLocation) + "\n")
-        for i in shortestPath:
-            print("Path point x = " + str(i.X + offset_x) + ", y = " + str(i.Y + offset_y) + "\n")
-        if len(shortestPath) != 1:
+        print("ppos = " + str(player.Position.X) + "   " + str(player.Position.Y) + "\n")
+        print("ppos = " + str(player.HouseLocation.X) + "   " + str(player.HouseLocation.Y) + "\n")
+        if Point().Distance(player.Position, player.HouseLocation) > 0:
             return create_move_action(shortestPath[1] + offset)
         else:
-            shortestPath = None
-            return create_move_action(player.HouseLocation)
+            bringBackResource = False
+            goGetResource = True
 
     return create_move_action(currentPosition)
 
