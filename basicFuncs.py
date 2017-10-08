@@ -52,7 +52,20 @@ def planMovement(obstacleMap, startPoint, endPoint):
     return points
 
 
-
+def findClosestTileContent(currentPosition, deserialized_map, tilecontent):
+    minDist = 10000000
+    minDistPosition = Point()
+    print('\n'.join([''.join(['{:4}'.format(str(item.Content)) for item in row])
+                     for row in deserialized_map]))
+    for x in range(0,len(deserialized_map)):
+        for y in range(0, len(deserialized_map[0])):
+            if deserialized_map[x][y].Content == str(tilecontent):
+                tilePosition = Point(x, y)
+                currentDistance = Point().Distance(currentPosition, tilePosition)
+                if currentDistance < minDist:
+                    minDist = currentDistance
+                    minDistPosition = tilePosition
+    return minDistPosition
 
 #def upgradeInHouse(currentPosition,upgradetypearray):
 #    if upgradetypearray == 'CarryingCapacity':

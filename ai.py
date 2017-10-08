@@ -32,8 +32,13 @@ def create_heal_action():
 def create_purchase_action(item):
     return create_action("PurchaseAction", item)
 
-def create_upgrade_action(UpgradeType):
-    return create_action("UpgradeAction",UpgradeType)
+
+
+def create_upgrade_action(upgrade):
+    actionContent = ActionContent("UpgradeAction", str(upgrade))
+    bleh = json.dumps(actionContent.__dict__)
+    print(bleh)
+    return bleh
 
 def deserialize_map(serialized_map):
     """
@@ -65,6 +70,10 @@ isFirstMove = True
 goGetResource = True
 grabResource = False
 bringBackResource = False
+
+actionCounter = 0
+brokeAWall = False
+goBreakAWall = False
 
 def bot():
     """
@@ -115,15 +124,13 @@ def bot():
     global grabResource
     global bringBackResource
 
+    global goBreakAWall
+    global brokeAWall
+    global actionCounter
+
     currentPosition = Point(x-offset_x,y-offset_y)
     print("position X= " + str(x) + " Y= " + str(y))
-    # get nearest ressource
-#    if shortestPath is None or (currentPosition == player.HouseLocation):
-#        isFirstMove = True
-#        print("-------------------------=======================-----------------\n")
-#        resourcePos = findClosestResource(currentPosition, deserialized_map) + offset
-#        #shortestPath = planMovement(createObstacleMap(deserialized_map), currentPosition, resourcePos)
-#        print("Resource pos x= " + str(resourcePos.X) + ", y= " + str(resourcePos.Y) + "\n")
+
 
     if goGetResource:
         resourcePos = findClosestResource(currentPosition, deserialized_map) + offset
@@ -152,8 +159,18 @@ def bot():
         if Point().Distance(player.Position, player.HouseLocation) > 0:
             return create_move_action(shortestPath[1] + offset)
         else:
+            print("Carry capacity: " + str(player.CarryingCapacity) + "\n")
+            create_upgrade_action(UpgradeType.CarryingCapacity)
             bringBackResource = False
             goGetResource = True
+#            actionCounter += 1
+#
+#            if actionCounter == 10:
+#                goBreakAWall = True
+#                goGetResource = False
+#
+#    if goGetResource:
+
 
     return create_move_action(currentPosition)
 
